@@ -58,7 +58,10 @@ export function Review({ doc }: { doc: DocumentView }) {
     });
   }
 
-  const set = (key: string, value: string) => setValues((current) => ({ ...current, [key]: value }));
+  const set = (key: string, value: string) => {
+    setError(null);
+    setValues((current) => ({ ...current, [key]: value }));
+  };
   const edits = { id: doc.id, values };
 
   return (
@@ -236,7 +239,10 @@ export function Review({ doc }: { doc: DocumentView }) {
               <label htmlFor="note" className="mt-3 block text-sm font-medium">
                 Note {failed.length ? "" : <span className="font-normal text-muted">(optional to approve)</span>}
               </label>
-              <textarea id="note" rows={2} maxLength={400} value={note} onChange={(event) => setNote(event.target.value)} className="field mt-1" placeholder={failed.length ? "Why this is fine to approve, or what needs fixing" : ""} />
+              <textarea id="note" rows={2} maxLength={400} value={note} onChange={(event) => {
+                  setError(null);
+                  setNote(event.target.value);
+                }} className="field mt-1" placeholder={failed.length ? "Why this is fine to approve, or what needs fixing" : ""} />
               <div className="mt-3 flex flex-wrap gap-2">
                 <button type="button" disabled={pending} className="btn btn-primary" onClick={() => act(() => decideAction({ ...edits, decision: "approve", note }))}>
                   Approve

@@ -62,6 +62,13 @@ describe("checks on a bill", () => {
     expect(failed(invoice, { earlier: [{ vendor: "Someone Else", number: "BL-1" }] })).toEqual([]);
   });
 
+  it("words the vendor and duplicate checks so they stay true after a vendor is added or the first copy is approved", () => {
+    const detail = (key: string, over: Partial<CheckContext> = {}) => runChecks("invoice", invoice, lines, { ...context, ...over }).find((check) => check.key === key)?.detail;
+    expect(detail("vendor")).toBe("Bellwether Linen Service is on this client's vendor file.");
+    expect(detail("vendor", { vendorsOnFile: [] })).toBe("Bellwether Linen Service is not on this client's vendor file. Add them to the file, or check that the bill is theirs.");
+    expect(detail("duplicate", { earlier: [{ vendor: "Bellwether Linen Service", number: "BL-1" }] })).toBe("Invoice BL-1 from Bellwether Linen Service has already come in. Paying both would pay this bill twice.");
+  });
+
   it("flags a due date before the invoice date", () => {
     expect(failed({ ...invoice, due_date: "2026-10-02" })).toEqual(["dates"]);
   });

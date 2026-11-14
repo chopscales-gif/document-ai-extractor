@@ -25,23 +25,25 @@ export default async function InboxPage() {
       <p className="mt-3 max-w-[68ch] text-lg leading-relaxed text-muted">
         {waiting.length
           ? "Each one has been read by AI and then checked: do the lines add up, has this invoice number come in before, is the form signed. The ones that pass can be approved together. The rest are held for a person, with the reason."
-          : "Everything has been approved or rejected. The approved ones are on the Export page."}
+          : "Everything has been approved or rejected. The approved ones are on the Export page. Reset demo in the top bar puts all twelve documents back."}
       </p>
 
-      <aside aria-label="Demo guide" className="mt-6 rounded-lg border border-dashed border-ink/40 px-4 py-3">
-        <p className="font-semibold">Three things to try</p>
-        <ol className="mt-1.5 grid list-decimal gap-1.5 pl-5 leading-snug">
-          <li>
-            Open the <Link className="font-semibold underline underline-offset-2" href={`/documents/${find("plumbing-invoice").id}`}>plumber&apos;s invoice</Link> and choose a value. It lights up where it was read on the page. The check below it caught a mistake the plumber made.
-          </li>
-          <li>
-            Open the <Link className="font-semibold underline underline-offset-2" href={`/documents/${find("w9-farrow").id}`}>handwritten W-9</Link>, photographed at an angle, and see what was flagged.
-          </li>
-          <li>
-            Come back and approve the clean ones together, then open <Link className="font-semibold underline underline-offset-2" href="/export">Export</Link> to see what would go to the books.
-          </li>
-        </ol>
-      </aside>
+      {waiting.length > 0 && (
+        <aside aria-label="Demo guide" className="mt-6 rounded-lg border border-dashed border-ink/40 px-4 py-3">
+          <p className="font-semibold">Three things to try</p>
+          <ol className="mt-1.5 grid list-decimal gap-1.5 pl-5 leading-snug">
+            <li>
+              Open the <Link className="font-semibold underline underline-offset-2" href={`/documents/${find("plumbing-invoice").id}`}>plumber&apos;s invoice</Link> and choose a value. It lights up where it was read on the page. The check below it caught a mistake the plumber made.
+            </li>
+            <li>
+              Open the <Link className="font-semibold underline underline-offset-2" href={`/documents/${find("w9-farrow").id}`}>handwritten W-9</Link>, photographed at an angle, and see what was flagged.
+            </li>
+            <li>
+              Come back and approve the clean ones together, then open <Link className="font-semibold underline underline-offset-2" href="/export">Export</Link> to see what would go to the books.
+            </li>
+          </ol>
+        </aside>
+      )}
 
       {look.length > 0 && (
         <Section title="Needs a look" count={look.length} blurb="A check failed, or the AI flagged something it was not sure how to treat.">
@@ -124,7 +126,12 @@ function Row({ row }: { row: InboxRow }) {
           {row.status === "rejected" && row.note && <p className="mt-1 text-sm leading-snug text-flag">{row.note}</p>}
         </div>
         <div className="col-start-2 mt-2 flex items-center gap-3 sm:col-start-3 sm:mt-0 sm:flex-col sm:items-end sm:gap-1">
-          {amount && <p className="text-lg font-semibold tabular-nums">${amount}</p>}
+          {amount && (
+            <p className="text-lg font-semibold tabular-nums">
+              ${amount}
+              {values.balance_due && <span className="ml-1.5 text-sm font-normal text-muted sm:ml-0 sm:block sm:text-right">balance due on ${fmtAmount(values.total)}</span>}
+            </p>
+          )}
           <StatusChip status={row.status} clean={assessment.clean} />
         </div>
       </Link>

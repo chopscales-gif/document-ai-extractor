@@ -101,15 +101,15 @@ function billChecks(kind: DocKind, values: Values, lines: Line[], context: Check
     {
       const label = "Vendor is on file for this client";
       if (!vendor) checks.push(fail("vendor", label, "No vendor name", "There is no vendor name."));
-      else if (context.vendorsOnFile.some((name) => sameName(name, vendor))) checks.push(pass("vendor", label, `${vendor} has been paid before.`));
-      else checks.push(fail("vendor", label, "Vendor is not on file", `This client has not paid ${vendor} before. Add them to the file, or check that the bill is theirs.`));
+      else if (context.vendorsOnFile.some((name) => sameName(name, vendor))) checks.push(pass("vendor", label, `${vendor} is on this client's vendor file.`));
+      else checks.push(fail("vendor", label, "Vendor is not on file", `${vendor} is not on this client's vendor file. Add them to the file, or check that the bill is theirs.`));
     }
     {
       const label = "Invoice number has not come in before";
       const number = values.number ?? "";
       if (!number) checks.push(fail("duplicate", label, "No invoice number", "There is no invoice number."));
       else if (context.earlier.some((other) => other.number === number && sameName(other.vendor, vendor)))
-        checks.push(fail("duplicate", label, "Same invoice number as an earlier document", `Invoice ${number} from ${vendor} is already in the inbox. Paying both would pay this bill twice.`));
+        checks.push(fail("duplicate", label, "Same invoice number as an earlier document", `Invoice ${number} from ${vendor} has already come in. Paying both would pay this bill twice.`));
       else checks.push(pass("duplicate", label, `No other invoice ${number} from this vendor.`));
     }
   }

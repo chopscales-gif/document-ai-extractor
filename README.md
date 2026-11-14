@@ -18,7 +18,7 @@ AI can now read these pages well. The harder question is whether you can trust w
 
 - **Reads each document into the fields the books need.** Vendor, number, dates, line items, tax and total for invoices and receipts. Name, classification, tax ID and signature for W-9s.
 - **Shows its work.** Choose any value and it lights up on the page where it was read. On a phone, a close-up of that part of the page appears under the field.
-- **Checks the reading with plain rules, not more AI.** Do quantity and price multiply out, do the lines add up to the subtotal, does subtotal plus tax equal the total, has this invoice number come in before, is this a vendor the client has paid before, does the tax ID have nine digits, is the form signed and dated.
+- **Checks the reading with plain rules, not more AI.** Do quantity and price multiply out, do the lines add up to the subtotal, does subtotal plus tax equal the total, has this invoice number come in before, is the vendor on the client's file, does the tax ID have nine digits, is the form signed and dated.
 - **Sorts the inbox by what needs a person.** Documents that pass everything can be approved together in one click. The rest are held, each with its reason in plain words.
 - **Keeps the person in charge.** Correct a value and the checks run again on the spot. Approving over a failed check needs a note saying why, rejecting needs a reason, and each document keeps a history of what was changed.
 - **Exports only what was approved**, as a spreadsheet and as the request that would post each bill to the accounting system.

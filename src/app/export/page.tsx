@@ -18,7 +18,7 @@ export default async function ExportPage() {
     <main className="mx-auto w-full max-w-5xl flex-1 px-4 py-8 sm:px-6">
       <h1 className="font-display text-4xl font-semibold leading-[1.1] tracking-tight">Export</h1>
       <p className="mt-3 max-w-[68ch] text-lg leading-relaxed text-muted">
-        Only approved documents get this far. {waiting > 0 && `${waiting} more ${waiting === 1 ? "is" : "are"} still waiting in the inbox.`}
+        Only approved documents get this far. {waiting > 0 && `${waiting}${approved.length ? " more" : ""} ${waiting === 1 ? "is" : "are"} still waiting in the inbox.`}
       </p>
 
       {approved.length === 0 && (
@@ -66,7 +66,10 @@ export default async function ExportPage() {
                     <td className="px-3 py-2">{row.values.number}</td>
                     <td className="px-3 py-2 whitespace-nowrap">{fmtDate(row.values.date)}</td>
                     <td className="px-3 py-2">{row.values.category}</td>
-                    <td className="px-3 py-2 text-right font-medium">{fmtAmount(row.values.total)}</td>
+                    <td className="px-3 py-2 text-right font-medium">
+                      {fmtAmount(row.values.total)}
+                      {row.values.balance_due && <span className="block whitespace-nowrap font-normal text-muted">{fmtAmount(row.values.balance_due)} still due</span>}
+                    </td>
                   </tr>
                 ))}
               </tbody>

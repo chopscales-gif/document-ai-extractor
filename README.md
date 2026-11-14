@@ -27,7 +27,7 @@ AI can now read these pages well. The harder question is whether you can trust w
 
 Three things worth clicking first:
 
-1. Open the **plumber's invoice** from the guide at the top of the inbox and click **Subtotal**. It lights up on the page, and the check underneath shows the plumber's own lines add up to $10 less than the subtotal printed on the invoice.
+1. Open the **plumber's invoice** from the guide at the top of the inbox and click **Subtotal**. It lights up on the page, and the Checks list shows the plumber's own lines add up to $10 less than the subtotal printed on the invoice.
 2. Open the **handwritten W-9**, a phone photo taken at an angle. The tax ID is one digit short, and it was caught.
 3. Go back to the inbox, press **Approve all 5** on the clean ones, then open **Export** to see the spreadsheet and what would be sent to the accounting system.
 

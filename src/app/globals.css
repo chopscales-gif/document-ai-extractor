@@ -1,41 +1,70 @@
 @import "tailwindcss";
 
+/*
+ * The look is an account book on a desk: an oxblood cloth cover for the desk,
+ * cool white ledger paper with feint blue rules, blue-black ink, manila for
+ * anything clipped on, a blue pencil for what passes and a red one for what
+ * does not. Yellow highlighter always means the same thing: look at this.
+ */
 @theme inline {
-  --color-ink: #17251f;
-  --color-paper: #edf0ea;
-  --color-surface: #fbfcfa;
-  --color-desk: #d6dcd4;
-  --color-line: #c9d1c8;
-  --color-muted: #536159;
-  --color-accent: #1d6048;
-  --color-accent-deep: #144636;
-  --color-accent-tint: #dcebe2;
-  --color-mark: #ffe24a;
+  --color-desk: #4b1a25;
+  --color-desk-deep: #35111a;
+  --color-desk-line: #7a3c49;
+  --color-desk-text: #ecd5d8;
+  --color-paper: #f7f9fc;
+  --color-rule: #c9d8e8;
+  --color-rule-strong: #9bb2cb;
+  --color-ink: #1b2233;
+  --color-muted: #535e75;
+  --color-manila: #ead7a8;
+  --color-manila-soft: #f6eed6;
+  --color-manila-deep: #cdb06c;
+  --color-pencil: #1d4f91;
+  --color-pencil-tint: #e4edf8;
+  --color-flag: #ad241b;
+  --color-flag-tint: #fbe9e6;
+  --color-mark: #ffe14d;
   --color-mark-soft: #fff5b8;
-  --color-flag: #ad3226;
-  --color-flag-tint: #f7e4e0;
-  --color-amber: #6f5200;
-  --color-amber-tint: #f5ecc6;
-  --font-display: var(--font-plex-condensed), ui-sans-serif, system-ui, sans-serif;
-  --font-sans: var(--font-plex), ui-sans-serif, system-ui, sans-serif;
+  --font-display: var(--font-besley), Georgia, serif;
+  --font-sans: var(--font-franklin), ui-sans-serif, system-ui, sans-serif;
 }
 
 body {
-  background: var(--color-paper);
-  color: var(--color-ink);
+  background: var(--color-desk);
+  color: var(--color-paper);
   font-family: var(--font-sans);
 }
 
+/* On the desk the focus ring is highlighter yellow; on paper and manila it is ink. */
 :focus-visible {
-  outline: 2px solid var(--color-accent);
+  outline: 2px solid var(--color-mark);
   outline-offset: 2px;
 }
-
+.sheet :focus-visible,
+.slip :focus-visible,
 .demo-chrome :focus-visible {
-  outline-color: #ffffff;
+  outline-color: var(--color-pencil);
 }
 
 @layer components {
+  /* A sheet of ledger paper lying on the desk. Paper has square corners. */
+  .sheet {
+    background: var(--color-paper);
+    color: var(--color-ink);
+    border-radius: 2px;
+    box-shadow:
+      0 1px 0 rgb(255 255 255 / 0.5) inset,
+      0 1px 2px rgb(20 4 8 / 0.5),
+      0 14px 34px rgb(20 4 8 / 0.32);
+  }
+
+  /* A manila slip clipped to something: guidance, or a note from the AI. */
+  .slip {
+    background: var(--color-manila-soft);
+    color: var(--color-ink);
+    border-left: 3px solid var(--color-manila-deep);
+  }
+
   .btn {
     display: inline-flex;
     align-items: center;
@@ -43,8 +72,8 @@ body {
     gap: 0.5rem;
     min-height: 2.75rem;
     padding: 0.5rem 1.125rem;
-    border-radius: 0.375rem;
-    border: 1px solid transparent;
+    border-radius: 3px;
+    border: 1.5px solid transparent;
     font-size: 1rem;
     font-weight: 600;
     line-height: 1.2;
@@ -56,22 +85,22 @@ body {
     opacity: 0.55;
   }
   .btn-primary {
-    background: var(--color-accent);
+    background: var(--color-ink);
     color: #ffffff;
   }
   .btn-primary:hover:not(:disabled) {
-    background: var(--color-accent-deep);
+    background: var(--color-pencil);
   }
   .btn-quiet {
-    background: var(--color-surface);
-    border-color: var(--color-line);
+    background: #ffffff;
+    border-color: var(--color-rule-strong);
     color: var(--color-ink);
   }
   .btn-quiet:hover:not(:disabled) {
     border-color: var(--color-ink);
   }
   .btn-danger {
-    background: var(--color-surface);
+    background: #ffffff;
     border-color: var(--color-flag);
     color: var(--color-flag);
   }
@@ -79,29 +108,34 @@ body {
     background: var(--color-flag-tint);
   }
 
+  /* A blank on a paper form: white, with a line to write on. */
   .field {
     width: 100%;
-    min-height: 2.5rem;
-    padding: 0.375rem 0.625rem;
-    border: 1px solid var(--color-line);
-    border-radius: 0.25rem;
+    min-height: 2.75rem;
+    padding: 0.3125rem 0.5rem;
+    border: 0;
+    border-bottom: 1.5px solid var(--color-rule-strong);
+    border-radius: 2px 2px 0 0;
     background: #ffffff;
+    color: var(--color-ink);
     font-size: 1rem;
     font-variant-numeric: tabular-nums;
   }
+  .field:hover:not(:disabled) {
+    border-bottom-color: var(--color-ink);
+  }
   .field:disabled {
     background: transparent;
+    border-bottom-style: dotted;
     color: var(--color-ink);
     opacity: 1;
   }
-
-  .panel {
-    background: var(--color-surface);
-    border: 1px solid var(--color-line);
-    border-radius: 0.5rem;
+  textarea.field {
+    border: 1.5px solid var(--color-rule-strong);
+    border-radius: 2px;
   }
 
-  /* A swipe of highlighter. Yellow always means the same thing here: look at this. */
+  /* A swipe of highlighter. */
   .mark {
     background: var(--color-mark);
     color: var(--color-ink);
@@ -111,21 +145,50 @@ body {
     -webkit-box-decoration-break: clone;
   }
 
-  /* Where a value was read from, drawn over the page. */
+  /* A rubber stamp, used only for a decision that has been made. */
+  .stamp {
+    display: inline-flex;
+    align-items: center;
+    white-space: nowrap;
+    padding: 0.125rem 0.5rem;
+    border: 2px solid currentColor;
+    border-radius: 3px;
+    background: var(--color-paper);
+    font-family: var(--font-display);
+    font-size: 0.8125rem;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    transform: rotate(-1.5deg);
+  }
+
+  /* Where a value was read from, drawn over the page. Faint until chosen. */
   .source-box {
     position: absolute;
     border-radius: 2px;
-    border-bottom: 2px solid rgb(214 178 0 / 0.75);
+    background: rgb(255 225 77 / 0.2);
+    mix-blend-mode: multiply;
     cursor: pointer;
   }
   .source-box:hover {
-    background: rgb(255 226 74 / 0.3);
+    background: rgb(255 225 77 / 0.6);
   }
   .source-box[data-active] {
-    border: 0;
     background: var(--color-mark);
-    mix-blend-mode: multiply;
     box-shadow: 0 0 0 3px var(--color-mark);
+  }
+}
+
+/* The money column of a ledger: a double red rule down its left side. */
+@utility money-col {
+  border-left: 3px double rgb(173 36 27 / 0.45);
+}
+
+@media (min-width: 1024px) {
+  .field {
+    min-height: 2.125rem;
+    padding-block: 0.125rem;
+    font-size: 0.9375rem;
   }
 }
 

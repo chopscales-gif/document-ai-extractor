@@ -6,7 +6,7 @@ Invoices, receipts and W-9s are read by AI, checked by arithmetic, and held for 
 
 ![Reviewing an invoice: the value in the form is highlighted on the page it was read from](docs/review.png)
 
-**Live demo:** https://document-ai-extractor.vercel.app
+**Live demo:** https://chopmedia-document-ai.vercel.app
 
 ## The problem
 

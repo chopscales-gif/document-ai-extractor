@@ -14,6 +14,9 @@ export function DemoBar({ canReset }: { canReset: boolean }) {
     <div className="demo-chrome bg-manila text-sm text-ink">
       <div className="mx-auto flex max-w-[90rem] flex-wrap items-center gap-x-5 gap-y-1 px-4 py-1.5 sm:px-6">
         <p className="min-w-0 flex-1 basis-64 text-pretty py-1 leading-snug">
+          <a href="https://chopmedia.vercel.app/#bookkeeping" className="mr-3 whitespace-nowrap font-semibold underline decoration-ink/40 underline-offset-4 hover:decoration-ink">
+            ← All demos
+          </a>{" "}
           <strong className="font-bold">Demonstration build.</strong>{" "}
           <span>A fictional bookkeeping firm with invented clients and documents. The AI readings were recorded ahead of time. Nothing is sent.</span>
         </p>

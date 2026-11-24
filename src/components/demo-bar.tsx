@@ -15,7 +15,7 @@ export function DemoBar({ canReset }: { canReset: boolean }) {
   return (
     <div className="demo-chrome border-b border-line bg-panel text-[0.9375rem] text-ink-2">
       <div className="mx-auto flex max-w-[84rem] flex-wrap items-center gap-x-6 gap-y-1.5 py-2 pl-[max(1rem,env(safe-area-inset-left))] pr-[max(1rem,env(safe-area-inset-right))] sm:px-6">
-        <a href="https://chopmedia.vercel.app/#bookkeeping" className={action}>
+        <a href="https://haydenhuelskamp.vercel.app/#bookkeeping" className={action}>
           ← All demos
         </a>
         <p className="min-w-0 flex-1 basis-[22rem] leading-snug">

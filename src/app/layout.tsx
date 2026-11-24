@@ -1,13 +1,13 @@
 import type { Metadata, Viewport } from "next";
-import { Besley, Libre_Franklin } from "next/font/google";
+import { Plus_Jakarta_Sans } from "next/font/google";
 import { DemoBar } from "@/components/demo-bar";
 import { SiteHeader } from "@/components/site";
+import { Tour } from "@/components/tour";
 import { sandboxIdOrNull } from "@/server/session";
 import "./globals.css";
 
-// Besley is a Clarendon, the face on ledger spines and receipt books. Libre Franklin is the gothic of printed business forms.
-const besley = Besley({ variable: "--font-besley", subsets: ["latin"], weight: ["500", "700"] });
-const franklin = Libre_Franklin({ variable: "--font-franklin", subsets: ["latin"], weight: ["400", "500", "600", "700"] });
+// A soft, round sans with a heavy weight for headlines and a true italic for the one phrase that leans.
+const jakarta = Plus_Jakarta_Sans({ variable: "--font-jakarta", subsets: ["latin"], weight: ["400", "500", "600", "700", "800"], style: ["normal", "italic"] });
 
 export const metadata: Metadata = {
   title: { default: "Document AI extractor (demo)", template: "%s | Document AI extractor (demo)" },
@@ -16,16 +16,17 @@ export const metadata: Metadata = {
   robots: { index: false },
 };
 
-export const viewport: Viewport = { width: "device-width", initialScale: 1 };
+export const viewport: Viewport = { width: "device-width", initialScale: 1, themeColor: "#fbf8f6" };
 
 export default async function RootLayout({ children }: LayoutProps<"/">) {
   const hasSandbox = (await sandboxIdOrNull()) !== null;
   return (
-    <html lang="en" className={`${besley.variable} ${franklin.variable} h-full antialiased`}>
+    <html lang="en" className={`${jakarta.variable} h-full antialiased`}>
       <body className="flex min-h-full flex-col">
         <DemoBar canReset={hasSandbox} />
         <SiteHeader />
         {children}
+        <Tour />
       </body>
     </html>
   );

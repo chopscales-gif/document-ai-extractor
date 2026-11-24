@@ -2,17 +2,14 @@
 
 export default function ErrorPage({ retry }: { error: unknown; retry: () => void }) {
   return (
-    <main className="mx-auto w-full max-w-2xl flex-1 px-4 py-12">
-      <div className="sheet px-5 py-7 sm:px-8">
-        <h1 className="font-display text-3xl font-medium leading-tight tracking-tight">This page did not load</h1>
-        <p className="mt-3 leading-relaxed text-muted">
-          Try again. If it keeps happening, use Reset demo in the bar at the top to start from a fresh copy of the sample data. This demo needs cookies
-          turned on to keep your copy separate from other visitors.
-        </p>
-        <button type="button" onClick={() => retry()} className="btn btn-primary mt-6">
-          Try again
-        </button>
-      </div>
+    <main className="mx-auto w-full max-w-2xl flex-1 px-4 py-14 sm:px-6">
+      <h1 className="text-4xl font-extrabold leading-tight tracking-[-0.03em]">This page did not load</h1>
+      <p className="mt-4 text-lg leading-relaxed text-ink-2">
+        Try again. If it keeps happening, use Reset demo at the top to start from a fresh copy of the sample data. This demo needs cookies turned on to keep your copy separate from other visitors.
+      </p>
+      <button type="button" onClick={() => retry()} className="btn btn-primary mt-7">
+        Try again
+      </button>
     </main>
   );
 }

@@ -16,6 +16,8 @@ export type Check = {
   detail: string;
   /** A few words for the inbox when the check fails. */
   problem?: string;
+  /** The one figure that says how far off it is, shown large on the review screen: "$10.00", "8 of 9". */
+  figure?: string;
 };
 
 export type CheckContext = {
@@ -28,7 +30,8 @@ export type CheckContext = {
 export type Values = Record<string, string>;
 
 const pass = (key: string, label: string, detail: string): Check => ({ key, label, ok: true, detail });
-const fail = (key: string, label: string, problem: string, detail: string): Check => ({ key, label, ok: false, detail, problem });
+const fail = (key: string, label: string, problem: string, detail: string, figure?: string): Check => ({ key, label, ok: false, detail, problem, ...(figure ? { figure } : {}) });
+const dollars = (cents: number) => `$${fmtCents(cents)}`;
 
 /** Names compared without case, punctuation or spacing, so a stray comma or capital letter does not make a new vendor. */
 export const sameName = (a: string, b: string) => a.toLowerCase().replace(/[^a-z0-9]/g, "") === b.toLowerCase().replace(/[^a-z0-9]/g, "");
@@ -50,7 +53,7 @@ function billChecks(kind: DocKind, values: Values, lines: Line[], context: Check
     const wrong = priced.filter((line) => Math.round(Number(line.qty) * (toCents(line.unitPrice) ?? NaN)) !== toCents(line.amount));
     checks.push(
       wrong.length
-        ? fail("line_math", label, "A line does not multiply out", `${wrong.map((line) => line.description).join(", ")}: quantity times price does not give the amount.`)
+        ? fail("line_math", label, wrong.length === 1 ? "A line does not multiply out" : `${wrong.length} lines do not multiply out`, `${wrong.map((line) => line.description).join(", ")}: quantity times price does not give the amount.`, wrong.length === 1 ? "1 line" : `${wrong.length} lines`)
         : pass("line_math", label, priced.length === 1 ? "The one line multiplies out." : `All ${priced.length} lines multiply out.`),
     );
   }
@@ -60,7 +63,15 @@ function billChecks(kind: DocKind, values: Values, lines: Line[], context: Check
     const sum = lines.reduce((running, line) => running + (toCents(line.amount) ?? 0), 0);
     if (subtotal === null) checks.push(fail("lines_sum", label, "No subtotal", "There is no subtotal to compare the lines with."));
     else if (sum !== subtotal)
-      checks.push(fail("lines_sum", label, "Lines do not add up to the subtotal", `The lines add up to ${fmtCents(sum)}. The subtotal says ${fmtCents(subtotal)}, a difference of ${fmtCents(Math.abs(sum - subtotal))}.`));
+      checks.push(
+        fail(
+          "lines_sum",
+          label,
+          `The lines add up to ${dollars(Math.abs(sum - subtotal))} ${sum < subtotal ? "less" : "more"} than the subtotal`,
+          `The lines add up to ${fmtCents(sum)}. The subtotal says ${fmtCents(subtotal)}, a difference of ${fmtCents(Math.abs(sum - subtotal))}.`,
+          dollars(Math.abs(sum - subtotal)),
+        ),
+      );
     else checks.push(pass("lines_sum", label, `${lines.length === 1 ? "The one line comes" : `The ${lines.length} lines add up`} to ${fmtCents(sum)}.`));
   }
 
@@ -73,7 +84,7 @@ function billChecks(kind: DocKind, values: Values, lines: Line[], context: Check
       checks.push(
         sum === total
           ? pass("total_sum", label, `${parts} comes to ${fmtCents(total)}.`)
-          : fail("total_sum", label, "Total does not add up", `${parts} comes to ${fmtCents(sum)}. The total says ${fmtCents(total)}, a difference of ${fmtCents(Math.abs(sum - total))}.`),
+          : fail("total_sum", label, `The total is ${dollars(Math.abs(sum - total))} off what its parts add up to`, `${parts} comes to ${fmtCents(sum)}. The total says ${fmtCents(total)}, a difference of ${fmtCents(Math.abs(sum - total))}.`, dollars(Math.abs(sum - total))),
       );
     }
   }
@@ -87,13 +98,13 @@ function billChecks(kind: DocKind, values: Values, lines: Line[], context: Check
       checks.push(
         total - deposit === balance
           ? pass("balance", label, `${fmtCents(total)} less ${fmtCents(deposit)} leaves ${fmtCents(balance)}.`)
-          : fail("balance", label, "Balance does not add up", `${fmtCents(total)} less ${fmtCents(deposit)} leaves ${fmtCents(total - deposit)}. The balance says ${fmtCents(balance)}.`),
+          : fail("balance", label, `The balance due is ${dollars(Math.abs(total - deposit - balance))} off`, `${fmtCents(total)} less ${fmtCents(deposit)} leaves ${fmtCents(total - deposit)}. The balance says ${fmtCents(balance)}.`, dollars(Math.abs(total - deposit - balance))),
       );
   }
 
   if (values.date && values.due_date) {
     const label = "Due date is not before the invoice date";
-    checks.push(values.due_date >= values.date ? pass("dates", label, "The dates are in order.") : fail("dates", label, "Due before it was issued", "The due date is earlier than the invoice date."));
+    checks.push(values.due_date >= values.date ? pass("dates", label, "The dates are in order.") : fail("dates", label, "Due before it was issued", "The due date is earlier than the invoice date.", "Due early"));
   }
 
   if (kind === "invoice") {
@@ -102,14 +113,14 @@ function billChecks(kind: DocKind, values: Values, lines: Line[], context: Check
       const label = "Vendor is on file for this client";
       if (!vendor) checks.push(fail("vendor", label, "No vendor name", "There is no vendor name."));
       else if (context.vendorsOnFile.some((name) => sameName(name, vendor))) checks.push(pass("vendor", label, `${vendor} is on this client's vendor file.`));
-      else checks.push(fail("vendor", label, "Vendor is not on file", `${vendor} is not on this client's vendor file. Add them to the file, or check that the bill is theirs.`));
+      else checks.push(fail("vendor", label, "Not on this client's vendor file yet", `${vendor} is not on this client's vendor file. Add them to the file, or check that the bill is theirs.`, "New vendor"));
     }
     {
       const label = "Invoice number has not come in before";
       const number = values.number ?? "";
       if (!number) checks.push(fail("duplicate", label, "No invoice number", "There is no invoice number."));
       else if (context.earlier.some((other) => other.number === number && sameName(other.vendor, vendor)))
-        checks.push(fail("duplicate", label, "Same invoice number as an earlier document", `Invoice ${number} from ${vendor} has already come in. Paying both would pay this bill twice.`));
+        checks.push(fail("duplicate", label, "Same invoice number as one already in. Paying both pays twice", `Invoice ${number} from ${vendor} has already come in. Paying both would pay this bill twice.`, `No. ${number}`));
       else checks.push(pass("duplicate", label, `No other invoice ${number} from this vendor.`));
     }
   }
@@ -130,16 +141,16 @@ function formChecks(values: Values): Check[] {
     else {
       const off = Math.abs(9 - digits);
       const count = `${off === 1 ? "one digit" : `${off} digits`} ${digits < 9 ? "short" : "too many"}`;
-      checks.push(fail("tin", label, `Tax ID is ${count}`, `The tax ID has ${digits} digits, ${count}. Ask for a corrected form.`));
+      checks.push(fail("tin", label, `Tax ID is ${count}`, `The tax ID has ${digits} digits, ${count}. Ask for a corrected form.`, `${digits} of 9`));
     }
   }
 
   checks.push(
     (values.signed ?? "").toLowerCase() === "yes"
       ? pass("signed", "Form is signed", "There is a signature.")
-      : fail("signed", "Form is signed", "Not signed", "The signature line is blank. An unsigned form does not certify the tax ID."),
+      : fail("signed", "Form is signed", "Not signed", "The signature line is blank. An unsigned form does not certify the tax ID.", "Unsigned"),
   );
-  checks.push(values.signature_date ? pass("dated", "Form is dated", "There is a date beside the signature.") : fail("dated", "Form is dated", "Not dated", "There is no date beside the signature."));
+  checks.push(values.signature_date ? pass("dated", "Form is dated", "There is a date beside the signature.") : fail("dated", "Form is dated", "Not dated", "There is no date beside the signature.", "No date"));
 
   return checks;
 }

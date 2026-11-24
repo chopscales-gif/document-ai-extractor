@@ -41,5 +41,6 @@ export function proxy(request: NextRequest) {
 }
 
 export const config = {
-  matcher: ["/((?!_next/static|_next/image|favicon.ico|robots.txt).*)"],
+  // Photos are excluded so the image optimizer, which fetches them without the visitor's cookie, is not redirected.
+  matcher: ["/((?!_next/static|_next/image|photos/|favicon.ico|robots.txt).*)"],
 };

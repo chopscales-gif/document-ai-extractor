@@ -54,14 +54,14 @@ export async function addVendorAction(input: z.input<typeof edit>): Promise<Acti
 
 const decision = z.object({ id, values, decision: z.enum(["approve", "reject"]), note: z.string().max(400) });
 
-/** Approves or rejects, saving any corrections on screen first, then goes back to the inbox. */
+/** Approves, or holds for the client, saving any corrections on screen first, then goes back to the inbox. */
 export async function decideAction(input: z.input<typeof decision>): Promise<ActionResult> {
   const parsed = decision.safeParse(input);
   if (!parsed.success) return BAD_INPUT;
   return run(async (ctx) => {
     await saveValues(ctx, parsed.data.id, parsed.data.values);
     await (parsed.data.decision === "approve" ? approve : reject)(ctx, parsed.data.id, parsed.data.note);
-    return "/";
+    return "/inbox";
   });
 }
 
@@ -71,7 +71,10 @@ export async function reopenAction(documentId: string): Promise<ActionResult> {
 }
 
 export async function approveCleanAction(): Promise<ActionResult> {
-  return run(async (ctx) => void (await approveClean(ctx)));
+  return run(async (ctx) => {
+    await approveClean(ctx);
+    return "/export";
+  });
 }
 
 /** Throws away this visitor's changes and starts again from the twelve unread documents. */

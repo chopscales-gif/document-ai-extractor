@@ -4,26 +4,30 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { FIRM } from "@/lib/samples";
 
-/** The fictional firm's own header: its name, lettered as on the cover of an account book, and the two places work happens as index tabs. */
+/** The fictional firm's own header: its mark and name, which go back to the welcome page, and the two places work happens. */
 export function SiteHeader() {
   const pathname = usePathname();
   const tab = (href: string, label: string, active: boolean) => (
     <Link
       href={href}
       aria-current={active ? "page" : undefined}
-      className={`inline-flex min-h-11 items-center rounded-t-md px-5 font-semibold ${active ? "bg-paper text-ink" : "bg-manila/20 text-paper hover:bg-manila/35"}`}
+      className={`inline-flex min-h-11 items-center rounded-full px-4 font-semibold sm:px-5 ${active ? "bg-panel text-ink shadow-[var(--shadow)]" : "text-ink-2 hover:text-ink"}`}
     >
       {label}
     </Link>
   );
   return (
-    <header className="border-b-4 border-paper bg-desk-deep">
-      <div className="mx-auto flex max-w-[90rem] flex-wrap items-end justify-between gap-x-8 gap-y-2 px-4 pt-3 sm:px-6">
-        <p className="pb-3 font-display text-[1.375rem] font-bold leading-tight tracking-tight text-paper">
-          {FIRM.name} <span className="whitespace-nowrap font-sans text-sm font-normal tracking-normal text-desk-text">{FIRM.town}</span>
-        </p>
-        <nav aria-label="Main" className="flex gap-1.5">
-          {tab("/", "Inbox", pathname === "/" || pathname.startsWith("/documents"))}
+    <header className="sticky top-[env(safe-area-inset-top)] z-20 bg-paper/90 backdrop-blur-md">
+      <div className="mx-auto flex max-w-[76rem] items-center gap-4 py-3.5 pl-[max(1rem,env(safe-area-inset-left))] pr-[max(1rem,env(safe-area-inset-right))] sm:px-6 sm:py-4">
+        <Link href="/" className="flex min-w-0 items-center gap-3" aria-label={`${FIRM.name}, welcome page`}>
+          <span aria-hidden className="grid size-9 shrink-0 place-items-center rounded-[0.7rem] bg-gradient-to-br from-plum to-plum-deep text-[1.0625rem] font-extrabold text-white shadow-[0_6px_14px_-6px_rgb(110_57_103/0.7)]">
+            W
+          </span>
+          <span className="truncate text-[1.0625rem] font-bold tracking-[-0.01em] sm:text-lg">Wren &amp; Abacus</span>
+          <span className="hidden truncate text-[0.9375rem] text-ink-3 md:inline">Bookkeeping, {FIRM.town}</span>
+        </Link>
+        <nav aria-label="Main" className="ml-auto flex shrink-0 gap-1">
+          {tab("/inbox", "Inbox", pathname.startsWith("/inbox") || pathname.startsWith("/documents"))}
           {tab("/export", "Export", pathname.startsWith("/export"))}
         </nav>
       </div>

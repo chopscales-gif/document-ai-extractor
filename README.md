@@ -17,29 +17,30 @@ AI can now read these pages well. The harder question is whether you can trust w
 ## What it does
 
 - **Reads each document into the fields the books need.** Vendor, number, dates, line items, tax and total for invoices and receipts. Name, classification, tax ID and signature for W-9s.
-- **Shows its work.** Choose any value and it lights up on the page where it was read. On a phone, a close-up of that part of the page appears under the field.
+- **Shows its work.** Choose any value and it lights up on the page where it was read. On a phone, a close-up of that part of the page appears right under the value.
 - **Checks the reading with plain rules, not more AI.** Do quantity and price multiply out, do the lines add up to the subtotal, does subtotal plus tax equal the total, has this invoice number come in before, is the vendor on the client's file, does the tax ID have nine digits, is the form signed and dated.
-- **Sorts the inbox by what needs a person.** Documents that pass everything can be approved together in one click. The rest are held, each with its reason in plain words.
-- **Keeps the person in charge.** Correct a value and the checks run again on the spot. Approving over a failed check needs a note saying why, rejecting needs a reason, and each document keeps a history of what was changed.
+- **Sorts the inbox by what needs a person.** One list of what is held, each with its reason in one line. Documents that pass everything are folded into one line and approved together in one click.
+- **Puts one thing in front.** A document opens on the check that failed, as one figure and one sentence, beside the page. Every other value, every check and the history are a click away.
+- **Keeps the person in charge.** Correct a value and the checks run again on the spot. Approving over a failed check needs a note saying why, holding a document for the client needs a note saying what to fix, and each document keeps a history of what was changed.
 - **Exports only what was approved**, as a spreadsheet and as the request that would post each bill to the accounting system.
 
 ## Try it
 
-Three things worth clicking first:
+The demo opens on a welcome page with today's numbers from your own copy of the inbox. **Take the tour** at the top walks through the next three steps in about a minute. Or click through yourself:
 
-1. Open the **plumber's invoice** from the guide at the top of the inbox and click **Subtotal**. It lights up on the page, and the Checks list shows the plumber's own lines add up to $10 less than the subtotal printed on the invoice.
+1. Open the inbox and the **plumber's invoice**. It opens on the failed check: the plumber's own lines add up to $10 less than the subtotal printed on the invoice, and the subtotal is already lit on the page. Choose any other value to find it too.
 2. Open the **handwritten W-9**, a phone photo taken at an angle. The tax ID is one digit short, and it was caught.
-3. Go back to the inbox, press **Approve all 5** on the clean ones, then open **Export** to see the spreadsheet and what would be sent to the accounting system.
+3. Go back to the inbox and press **Approve all 5** on the clean ones. The export opens with the spreadsheet, and what would be sent to the accounting system is one click further.
 
 **Reset demo** in the top bar puts everything back.
 
-![The inbox: seven documents held with a reason, five ready to approve together](docs/inbox.png)
+![The inbox: seven documents held, each with its reason in one line, and five ready to approve together](docs/inbox.png)
 
 | A handwritten W-9, photographed | The same screen on a phone |
 | --- | --- |
 | ![A handwritten W-9 with the tax ID highlighted](docs/w9.png) | ![The review screen at phone width with a close-up of the page](docs/review-mobile.png) |
 
-![The export page: approved bills, and the request each would send to the accounting system](docs/export.png)
+![The export page: the approved bills and receipt, ready for the books](docs/export.png)
 
 ## What is recorded and what is real
 
@@ -48,6 +49,8 @@ Three things worth clicking first:
 **Recorded: where each value sits on the page.** The sample pages were drawn by a script (`scripts/make-samples.mjs`), which also saved the position of every word. The highlight finds a value among those words. In a real build those positions come from the text-recognition step that runs on each incoming page.
 
 **Real: everything after the reading.** The checks, corrections, approval rules, duplicate detection, vendor file, history and export all run live on your own private copy of the sample data.
+
+**Stock: the photos.** The welcome page uses free photos from Unsplash (ids MhqUBTxQ3Hw, -Ym_TFojbQ8, UOalOTfpzlE, jsx4qvopjG4, xcvXS6wDCAY). The people in them are not staff or clients, and the page says so. The working screens have no photos.
 
 ## How it would plug into a real business
 
@@ -72,8 +75,9 @@ Next.js 16 (App Router, React 19, TypeScript), Tailwind CSS 4, Drizzle ORM on Po
 scripts/make-samples.mjs  draws the sample pages and saves each word's position
 public/samples/           the page images
 src/
-  app/                    pages: inbox, review (/documents/[id]), export, how the demo works
-  components/review.tsx   the review screen: page, fields, highlights, live checks
+  app/                    pages: welcome (/), inbox, review (/documents/[id]), export, how the demo works
+  components/review.tsx   the review screen: page, the failed check, values, highlights, live checks
+  components/tour.tsx     the guided tour across pages
   data/
     recordings.ts         what the AI read from each sample, saved
     words/                word positions for each page
@@ -81,9 +85,10 @@ src/
     checks.ts             every check, as plain functions
     locate.ts             finds a value's place on the page
     assess.ts             decides whether a document needs a person
+    flag.ts               the one line and the one figure a person is shown first
     export.ts             the spreadsheet and the accounting request
   server/
-    workflow.ts           every state change: correct, approve, reject, reopen, add vendor
+    workflow.ts           every state change: correct, approve, hold for the client, reopen, add vendor
     actions.ts            thin server actions over the workflow
     queries.ts            what each screen reads
   db/                     schema, seed data, per-visitor sandboxes

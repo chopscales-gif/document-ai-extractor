@@ -1,68 +1,71 @@
 @import "tailwindcss";
 
 /*
- * The look is an account book on a desk: an oxblood cloth cover for the desk,
- * cool white ledger paper with feint blue rules, blue-black ink, manila for
- * anything clipped on, a blue pencil for what passes and a red one for what
- * does not. Yellow highlighter always means the same thing: look at this.
+ * Calm and light: warm white paper, white panels lifted on soft shadows,
+ * aubergine ink instead of black, and plum for anything you can press.
+ * Amber says "look at this", brick says "this does not add up", green says
+ * "ready". The highlight on a page is a marker swipe with a ring round it,
+ * so it can be found at a glance on a small screen too.
  */
 @theme inline {
-  --color-desk: #4b1a25;
-  --color-desk-deep: #35111a;
-  --color-desk-line: #7a3c49;
-  --color-desk-text: #ecd5d8;
-  --color-paper: #f7f9fc;
-  --color-rule: #c9d8e8;
-  --color-rule-strong: #9bb2cb;
-  --color-ink: #1b2233;
-  --color-muted: #535e75;
-  --color-manila: #ead7a8;
-  --color-manila-soft: #f6eed6;
-  --color-manila-deep: #cdb06c;
-  --color-pencil: #1d4f91;
-  --color-pencil-tint: #e4edf8;
-  --color-flag: #ad241b;
-  --color-flag-tint: #fbe9e6;
-  --color-mark: #ffe14d;
-  --color-mark-soft: #fff5b8;
-  --font-display: var(--font-besley), Georgia, serif;
-  --font-sans: var(--font-franklin), ui-sans-serif, system-ui, sans-serif;
+  --color-paper: #fbf8f6;
+  --color-panel: #ffffff;
+  --color-ink: #2c1a2c;
+  --color-ink-2: #6a5868;
+  --color-ink-3: #8a7a87;
+  --color-line: #ece2e8;
+  --color-line-strong: #dccbd5;
+  --color-plum: #6e3967;
+  --color-plum-deep: #552b4f;
+  --color-mauve: #e4c6d6;
+  --color-mauve-soft: #f6ecf1;
+  --color-wash: #f3e8ee;
+  --color-amber: #8a5800;
+  --color-amber-bg: #fbefd6;
+  --color-brick: #b0362c;
+  --color-brick-bg: #fbe9e6;
+  --color-ok: #2b7a60;
+  --color-ok-bg: #e6f3ee;
+  --color-mark: #fdf1d3;
+  --font-sans: var(--font-jakarta), ui-rounded, "Segoe UI", system-ui, sans-serif;
+}
+
+:root {
+  --shadow: 0 1px 2px rgb(60 30 55 / 0.06), 0 10px 30px -12px rgb(60 30 55 / 0.18);
+  --shadow-lg: 0 2px 4px rgb(60 30 55 / 0.06), 0 24px 60px -20px rgb(60 30 55 / 0.32);
+  color-scheme: light;
 }
 
 body {
-  background: var(--color-desk);
-  color: var(--color-paper);
+  background: var(--color-paper);
+  color: var(--color-ink);
   font-family: var(--font-sans);
+  font-size: 1.0625rem;
+  line-height: 1.55;
 }
 
-/* On the desk the focus ring is highlighter yellow; on paper and manila it is ink. */
-:focus-visible {
-  outline: 2px solid var(--color-mark);
-  outline-offset: 2px;
+h1,
+h2,
+h3 {
+  text-wrap: balance;
 }
-.sheet :focus-visible,
-.slip :focus-visible,
-.demo-chrome :focus-visible {
-  outline-color: var(--color-pencil);
+
+:focus-visible {
+  outline: 2px solid var(--color-plum);
+  outline-offset: 3px;
 }
 
 @layer components {
-  /* A sheet of ledger paper lying on the desk. Paper has square corners. */
-  .sheet {
-    background: var(--color-paper);
-    color: var(--color-ink);
-    border-radius: 2px;
-    box-shadow:
-      0 1px 0 rgb(255 255 255 / 0.5) inset,
-      0 1px 2px rgb(20 4 8 / 0.5),
-      0 14px 34px rgb(20 4 8 / 0.32);
+  /* A white panel lifted off the page. */
+  .panel {
+    background: var(--color-panel);
+    border-radius: 1.5rem;
+    box-shadow: var(--shadow);
   }
-
-  /* A manila slip clipped to something: guidance, or a note from the AI. */
-  .slip {
-    background: var(--color-manila-soft);
-    color: var(--color-ink);
-    border-left: 3px solid var(--color-manila-deep);
+  .panel-lg {
+    background: var(--color-panel);
+    border-radius: 1.5rem;
+    box-shadow: var(--shadow-lg);
   }
 
   .btn {
@@ -70,137 +73,175 @@ body {
     align-items: center;
     justify-content: center;
     gap: 0.5rem;
-    min-height: 2.75rem;
-    padding: 0.5rem 1.125rem;
-    border-radius: 3px;
-    border: 1.5px solid transparent;
-    font-size: 1rem;
-    font-weight: 600;
+    min-height: 3rem;
+    padding: 0.75rem 1.5rem;
+    border-radius: 999px;
+    border: 0;
+    font-size: 1.0625rem;
+    font-weight: 700;
     line-height: 1.2;
     cursor: pointer;
-    transition: background-color 120ms, border-color 120ms;
+    transition:
+      background-color 150ms,
+      transform 150ms,
+      box-shadow 150ms;
   }
   .btn:disabled {
     cursor: not-allowed;
     opacity: 0.55;
   }
   .btn-primary {
-    background: var(--color-ink);
+    background: var(--color-plum);
     color: #ffffff;
+    box-shadow: 0 10px 22px -10px rgb(110 57 103 / 0.8);
   }
   .btn-primary:hover:not(:disabled) {
-    background: var(--color-pencil);
+    background: var(--color-plum-deep);
+    transform: translateY(-1px);
   }
   .btn-quiet {
-    background: #ffffff;
-    border-color: var(--color-rule-strong);
+    background: var(--color-panel);
     color: var(--color-ink);
+    box-shadow:
+      0 0 0 1px var(--color-line),
+      var(--shadow);
   }
   .btn-quiet:hover:not(:disabled) {
-    border-color: var(--color-ink);
+    box-shadow:
+      0 0 0 1px var(--color-line-strong),
+      var(--shadow);
+    transform: translateY(-1px);
   }
   .btn-danger {
-    background: #ffffff;
-    border-color: var(--color-flag);
-    color: var(--color-flag);
-  }
-  .btn-danger:hover:not(:disabled) {
-    background: var(--color-flag-tint);
+    background: var(--color-panel);
+    color: var(--color-brick);
+    box-shadow:
+      0 0 0 1.5px var(--color-brick),
+      var(--shadow);
   }
 
-  /* A blank on a paper form: white, with a line to write on. */
+  /* An underlined text link in the mauve of the brand. */
+  .link {
+    font-weight: 600;
+    text-decoration: underline;
+    text-decoration-color: var(--color-mauve);
+    text-decoration-thickness: 2px;
+    text-underline-offset: 4px;
+  }
+  .link:hover {
+    text-decoration-color: var(--color-plum);
+  }
+
   .field {
     width: 100%;
     min-height: 2.75rem;
-    padding: 0.3125rem 0.5rem;
-    border: 0;
-    border-bottom: 1.5px solid var(--color-rule-strong);
-    border-radius: 2px 2px 0 0;
-    background: #ffffff;
+    padding: 0.5rem 0.75rem;
+    border: 1px solid var(--color-line-strong);
+    border-radius: 0.75rem;
+    background: var(--color-panel);
     color: var(--color-ink);
     font-size: 1rem;
     font-variant-numeric: tabular-nums;
   }
   .field:hover:not(:disabled) {
-    border-bottom-color: var(--color-ink);
+    border-color: var(--color-ink-3);
   }
   .field:disabled {
-    background: transparent;
-    border-bottom-style: dotted;
+    background: var(--color-paper);
+    border-color: transparent;
     color: var(--color-ink);
     opacity: 1;
   }
-  textarea.field {
-    border: 1.5px solid var(--color-rule-strong);
-    border-radius: 2px;
-  }
 
-  /* A swipe of highlighter. */
-  .mark {
-    background: var(--color-mark);
-    color: var(--color-ink);
-    padding: 0.05em 0.3em;
-    border-radius: 0.15em;
-    box-decoration-break: clone;
-    -webkit-box-decoration-break: clone;
-  }
-
-  /* A rubber stamp, used only for a decision that has been made. */
-  .stamp {
-    display: inline-flex;
+  /* A collapsed section that opens on a click: a plain row with a plus sign. */
+  .fold > summary {
+    display: flex;
+    min-height: 3.5rem;
     align-items: center;
-    white-space: nowrap;
-    padding: 0.125rem 0.5rem;
-    border: 2px solid currentColor;
-    border-radius: 3px;
-    background: var(--color-paper);
-    font-family: var(--font-display);
-    font-size: 0.8125rem;
-    font-weight: 700;
-    letter-spacing: 0.08em;
-    text-transform: uppercase;
-    transform: rotate(-1.5deg);
+    justify-content: space-between;
+    gap: 0.75rem;
+    padding: 0.875rem 1.375rem;
+    font-weight: 600;
+    cursor: pointer;
+    list-style: none;
+  }
+  .fold > summary::-webkit-details-marker {
+    display: none;
+  }
+  .fold > summary::after {
+    content: "+";
+    color: var(--color-ink-3);
+    font-size: 1.375rem;
+    font-weight: 500;
+    line-height: 1;
+  }
+  .fold[open] > summary::after {
+    content: "\2013";
   }
 
   /* Where a value was read from, drawn over the page. Faint until chosen. */
   .source-box {
     position: absolute;
-    border-radius: 2px;
-    background: rgb(255 225 77 / 0.2);
+    border-radius: 4px;
+    background: rgb(236 178 54 / 0.12);
     mix-blend-mode: multiply;
     cursor: pointer;
   }
   .source-box:hover {
-    background: rgb(255 225 77 / 0.6);
+    background: rgb(236 178 54 / 0.35);
   }
   .source-box[data-active] {
-    background: var(--color-mark);
-    box-shadow: 0 0 0 3px var(--color-mark);
+    background: rgb(236 178 54 / 0.42);
+    outline: 2.5px solid #c98a00;
+    outline-offset: 3px;
+    mix-blend-mode: normal;
+  }
+
+  /* The spotlight and its caption for the tour. */
+  .tour-spot {
+    position: fixed;
+    z-index: 60;
+    border-radius: 1.25rem;
+    box-shadow: 0 0 0 9999px rgb(44 26 44 / 0.5);
+    pointer-events: none;
+    transition: all 0.55s ease;
+  }
+  .tour-tip {
+    position: fixed;
+    z-index: 61;
+    width: min(23.75rem, calc(100vw - 2rem));
+    transition:
+      top 0.55s ease,
+      left 0.55s ease;
   }
 }
 
-/* The money column of a ledger: a double red rule down its left side. */
-@utility money-col {
-  border-left: 3px double rgb(173 36 27 / 0.45);
-}
-
-@media (min-width: 1024px) {
-  .field {
-    min-height: 2.125rem;
-    padding-block: 0.125rem;
-    font-size: 0.9375rem;
+@media (prefers-reduced-motion: reduce) {
+  .tour-spot,
+  .tour-tip {
+    transition: none;
   }
 }
 
 @media (prefers-reduced-motion: no-preference) {
+  .rise {
+    animation: rise 0.35s ease both;
+  }
   .source-box[data-active] {
-    animation: swipe 220ms ease-out;
-    transform-origin: left center;
+    animation: ring 0.9s ease-out;
   }
 }
 
-@keyframes swipe {
+@keyframes rise {
   from {
-    transform: scaleX(0);
+    opacity: 0;
+    transform: translateY(8px);
+  }
+}
+
+@keyframes ring {
+  0% {
+    outline-offset: 14px;
+    outline-color: rgb(201 138 0 / 0);
   }
 }

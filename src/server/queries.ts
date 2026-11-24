@@ -42,7 +42,8 @@ export type FieldView = {
 export type LineView = Line & { boxes: Box[] };
 
 export type DocumentView = InboxRow & {
-  pages: { src: string; width: number; height: number }[];
+  /** `crop` is how much of the page, from the top, holds anything printed: the blank foot is not shown. */
+  pages: { src: string; width: number; height: number; crop: number }[];
   fields: FieldView[];
   lines: LineView[];
   pageNotes: string[];
@@ -70,7 +71,12 @@ export async function documentView(ctx: Ctx, id: string): Promise<DocumentView |
     values: doc.values,
     note: doc.note,
     assessment: assess(doc, docs, onFile),
-    pages: pages.map((page, index) => ({ src: pageImage(doc.key, index + 1), width: page.width, height: page.height })),
+    pages: pages.map((page, index) => ({
+      src: pageImage(doc.key, index + 1),
+      width: page.width,
+      height: page.height,
+      crop: Math.min(1, Math.max(0.3, ...page.words.map((word) => word[2] + word[4])) + 0.05),
+    })),
     fields: recording.fields.map((field) => {
       const page = field.page ?? 1;
       return {

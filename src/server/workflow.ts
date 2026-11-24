@@ -9,7 +9,7 @@ import { SAMPLE_BY_KEY } from "@/lib/samples";
 
 /**
  * What a reviewer can do to a document: correct what was read, approve it,
- * reject it, reopen it. Every function works inside one visitor's sandbox and
+ * hold it for the client (stored as rejected: it will not be exported), reopen it. Every function works inside one visitor's sandbox and
  * refuses, with a reason a person can act on, anything the rules do not allow.
  */
 
@@ -34,7 +34,7 @@ async function find(ctx: Ctx, id: string): Promise<Document> {
 
 async function underReview(ctx: Ctx, id: string): Promise<Document> {
   const doc = await find(ctx, id);
-  if (doc.status !== "needs_review") throw new WorkflowError(`This document is already ${doc.status}. Reopen it to change it.`);
+  if (doc.status !== "needs_review") throw new WorkflowError(`This document is already ${doc.status === "rejected" ? "held for the client" : doc.status}. Reopen it to change it.`);
   return doc;
 }
 
@@ -95,16 +95,16 @@ export async function approve(ctx: Ctx, id: string, note = ""): Promise<void> {
 export async function reject(ctx: Ctx, id: string, note = ""): Promise<void> {
   const doc = await underReview(ctx, id);
   const reason = note.trim();
-  if (reason.length < 3) throw new WorkflowError("Add a note saying why this is rejected, so whoever sent it knows what to fix.");
+  if (reason.length < 3) throw new WorkflowError("Add a note saying what the client needs to fix, so they know what to send back.");
   await ctx.db.update(documents).set({ status: "rejected", note: reason }).where(eq(documents.id, doc.id));
-  await log(ctx, doc.id, `Rejected: ${reason}`);
+  await log(ctx, doc.id, `Held for the client: ${reason}`);
 }
 
 export async function reopen(ctx: Ctx, id: string): Promise<void> {
   const doc = await find(ctx, id);
   if (doc.status === "needs_review") throw new WorkflowError("This document is already open for review.");
   await ctx.db.update(documents).set({ status: "needs_review", note: "" }).where(eq(documents.id, doc.id));
-  await log(ctx, doc.id, `Reopened after being ${doc.status}.`);
+  await log(ctx, doc.id, `Reopened after being ${doc.status === "rejected" ? "held for the client" : doc.status}.`);
 }
 
 /** Adds the vendor on an invoice to the client's vendors, so their bills stop being flagged. */
